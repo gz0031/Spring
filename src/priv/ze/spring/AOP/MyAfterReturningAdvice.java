@@ -16,5 +16,6 @@ public class MyAfterReturningAdvice implements AfterReturningAdvice {
     @Override
     public void afterReturning(Object o, Method method, Object[] objects, Object o1) throws Throwable {
         System.out.println("执行了后置通知");
+        System.out.println("github");
     }
 }
