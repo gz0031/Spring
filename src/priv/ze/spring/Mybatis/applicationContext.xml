@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <bean id="myDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/spring?serverTimezone=GMT%2B8&amp;useSSL=false"/>
+        <property name="user" value="root"/>
+        <property name="password" value="00312000"/>
+    </bean>
+
+    <!--注册SqlSessionFactory-->
+    <bean id="mySqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="mybatis-config.xml"/>
+        <property name="dataSource" ref="myDataSource"/>
+    </bean>
+
+    <!--生成Dao的代理对象  当前配置会为指定的基本包中所有的接口生成代理对象-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="mySqlSessionFactory"/>
+        <property name="basePackage" value="priv.ze.spring.Mybatis.dao"/>
+    </bean>
+
+    <!--注册service-->
+    <bean id="studentService" class="priv.ze.spring.Mybatis.Impl.IStudentServiceImpl">
+        <!--这里的Dao的注入需要使用ref属性，且其值为接口的简单类名-->
+        <property name="dao" ref="studentDaomapper"/>
+    </bean>
+</beans>

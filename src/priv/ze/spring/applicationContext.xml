@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--    注册目标对象-->
+    <bean id="someService" class="priv.ze.spring.AOP.SomeServiceImpl"/>
+    <bean id="someService1" class="priv.ze.spring.AOP.SomeServiceImpl"/>
+
+    <!--    注册切面:通知-->
+    <bean id="MyAdvice" class="priv.ze.spring.AOP.MyMethodBeforeAdvice"/>
+
+    <!--    注册切面:顾问(名称匹配方法切入点顾问)-->
+    <bean id="MyAdvisor" class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">
+    <!--    指定通知-->
+        <property name="advice" ref="MyAdvice"/>
+    <!--    指定切入点-->
+        <property name="mappedNames" value="doFirst,doSecond"/>
+    <!--    value中可以使用通配符-->
+    </bean>
+
+        <!--    注册切面:顾问(正则表达式方法切入点顾问)-->
+    <bean id="MyAdvisor1" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <!--    指定通知-->
+        <property name="advice" ref="MyAdvice"/>
+        <!--    指定切入点-->
+        <property name="pattern" value=".*doFirst|.*doSecond"/>
+    </bean>
+
+    <!--        生成代理对象-->
+    <bean id="serviceProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <!--        指定目标对象-->
+        <property name="target" ref="someService"/>
+    <!--        另一种方式-->
+        <property name="targetName" value="someService"/>
+    <!--        指定切面(实现切面有两种方式：通知和顾问)-->
+        <property name="interceptorNames" value="MyAdvisor1"/>
+    </bean>
+
+<!--        注册自动代理生成器-->
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+    <!--        指定具体哪个目标对象-->
+    <property name="beanNames" value="someService1"/>
+    <!--        指定某个顾问或通知-->
+    <property name="interceptorNames" value="MyAdvisor1"/>
+    </bean>
+</beans>
+
+
